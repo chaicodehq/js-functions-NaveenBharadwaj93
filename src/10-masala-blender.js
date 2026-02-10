@@ -54,28 +54,94 @@
  */
 export function pipe(...fns) {
   // Your code here
+  if (fns.length === 0) {
+    return (x) => x;
+  }
+  return (x) => fns.reduce((acc, fn) => fn(acc), x);
 }
 
 export function compose(...fns) {
   // Your code here
+  if (fns.length === 0) {
+    return (x) => x;
+  }
+  return (x) => fns.reduceRight((acc, fn) => fn(acc), x);
 }
 
 export function grind(spice) {
   // Your code here
+  if (spice.form === "powder") {
+    return spice;
+  }
+  return { ...spice, form: "powder" };
 }
 
 export function roast(spice) {
   // Your code here
+  if (spice.roasted) {
+    return spice;
+  }
+
+  if (spice.form === "powder") {
+    return { ...spice, roasted: true, aroma: "strong" };
+  }
+
+  if (spice.aroma === "strong") {
+    return { ...spice, roasted: true, aroma: "strong" };
+  }
+
+  if (spice.form === "powder" && spice.aroma === "strong") {
+    return { ...spice, roasted: true, aroma: "strong" };
+  }
+  return { ...spice, roasted: true, aroma: "strong" };
 }
 
 export function mix(spice) {
   // Your code here
+  if (spice.mixed) {
+    return spice;
+  }
+  if (spice.roasted) {
+    return { ...spice, mixed: true };
+  }
+  if (spice.form === "powder") {
+    return { ...spice, mixed: true };
+  }
+
+  if (spice.aroma === "strong") {
+    return { ...spice, mixed: true };
+  }
+
+  if (spice.form === "powder" && spice.aroma === "strong") {
+    return { ...spice, mixed: true };
+  }
+
+  if (spice.form === "powder" && spice.roasted) {
+    return { ...spice, mixed: true };
+  }
+
+  if (spice.aroma === "strong" && spice.roasted) {
+    return { ...spice, mixed: true };
+  }
+
+  return { ...spice, mixed: true };
 }
 
 export function pack(spice) {
   // Your code here
+  return { ...spice, packed: true, label: `${spice.name} Masala` };
 }
 
 export function createRecipe(steps) {
   // Your code here
+  if (!Array.isArray(steps)) {
+    return (x) => x;
+  }
+  const stepFns = {
+    grind,
+    roast,
+    mix,
+    pack,
+  };
+  return pipe(...steps.map((step) => stepFns[step]).filter(Boolean));
 }
